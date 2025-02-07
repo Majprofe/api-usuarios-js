@@ -51,6 +51,43 @@ app.get("/users", (req, res) => {
 
 /**
  * @swagger
+ * /users:
+ *   post:
+ *     summary: Crear un nuevo usuario
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               gender:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Usuario creado
+ */
+app.post("/users", (req, res) => {
+    const { name, gender, email, status } = req.body;
+    const newUser = {
+        id: usuarios.length + 1,
+        name,
+        gender,
+        email,
+        status
+    };
+    usuarios.push(newUser);
+    res.status(201).json(newUser);
+});
+
+/**
+ * @swagger
  * /users/{id}:
  *   get:
  *     summary: Obtener detalles de un usuario
