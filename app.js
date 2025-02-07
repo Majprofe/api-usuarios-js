@@ -72,9 +72,15 @@ app.get("/users/:id", (req, res) => {
 
 /**
  * @swagger
- * /users:
- *   post:
- *     summary: Crear usuario
+ * /users/{id}:
+ *   put:
+ *     summary: Modificar un usuario
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
  *     requestBody:
  *       required: true
  *       content:
@@ -91,23 +97,37 @@ app.get("/users/:id", (req, res) => {
  *               status:
  *                 type: string
  *     responses:
- *       201:
- *         description: Usuario creado
+ *       200:
+ *         description: Usuario modificado
  */
-app.post("/users", (req, res) => {
-    const { name, gender, email, status } = req.body;
-    const newUser = {
-        id: usuarios.length + 1,
-        name,
-        gender,
-        email,
-        status
-    };
-    usuarios.push(newUser);
-    res.status(201).json(newUser);
+app.put("/users/:id", (req, res) => {
+    const user = usuarios.find(u => u.id === parseInt(req.params.id));
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+    Object.assign(user, req.body);
+    res.json(user);
 });
 
-// El resto de los endpoints siguen igual...
+/**
+ * @swagger
+ * /users/{id}:
+ *   delete:
+ *     summary: Eliminar usuario
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       204:
+ *         description: Usuario eliminado
+ */
+app.delete("/users/:id", (req, res) => {
+    const userIndex = usuarios.findIndex(u => u.id === parseInt(req.params.id));
+    if (userIndex === -1) return res.status(404).json({ message: "Usuario no encontrado" });
+    usuarios.splice(userIndex, 1);
+    res.status(204).send();
+});
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
